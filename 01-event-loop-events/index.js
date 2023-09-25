@@ -5,7 +5,7 @@ const info = text => {
   console.log(text, performance.now().toFixed(2));
 };
 
-info('program start');
+info('program start!');
 
 // Close events
 fs.writeFile('./test.txt', 'hello node.js', () => info('file written'));
@@ -56,4 +56,4 @@ dns.lookup('localhost', (err, address, family) => {
   });
 });
 
-info('program end');
+info('program end!');
