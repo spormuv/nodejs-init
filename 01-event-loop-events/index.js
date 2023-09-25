@@ -1,46 +1,59 @@
 const fs = require('fs');
 const dns = require('dns');
 
-const timestamp = () => performance.now().toFixed(2);
+const info = text => {
+  console.log(text, performance.now().toFixed(2));
+};
 
-console.log('program start');
-
-// Timeouts
-setTimeout(() => {
-  console.log('timeout 1', timestamp());
-}, 0);
-
-setTimeout(() => {
-  process.nextTick(() => {
-    console.log('next tick 2', timestamp());
-  });
-
-  console.log('timeout 2', timestamp());
-}, 10);
+info('program start');
 
 // Close events
-fs.writeFile('./test.txt', 'hello node.js', () =>
-  console.log('file written', timestamp())
-);
+fs.writeFile('./test.txt', 'hello node.js', () => info('file written'));
 
 // Promises
 Promise.resolve().then(() => {
-  console.log('promise 1', timestamp());
+  info('promise 1');
 });
 
 // Next tick
 process.nextTick(() => {
-  console.log('next tick 1', timestamp());
+  info('next tick 1');
 });
 
 // SetImmediate (check)
 setImmediate(() => {
-  console.log('immediate 1', timestamp());
+  info('immediate 1');
 });
+
+// Timeouts
+setTimeout(() => {
+  info('timeout 1');
+}, 0);
+
+setTimeout(() => {
+  process.nextTick(() => {
+    info('next tick 2');
+  });
+
+  info('timeout 2');
+}, 100);
+
+// Intervals
+let intervalCount = 1;
+const intervalId = setInterval(() => {
+  info(`interval ${(intervalCount += 1)}`);
+  if (intervalCount === 2) clearInterval(intervalId);
+}, 50);
 
 // I/O events
 dns.lookup('localhost', (err, address, family) => {
-  console.log('dns 1 localhost', address, timestamp());
+  info('dns 1 localhost');
+  Promise.resolve().then(() => {
+    info('promise 2');
+  });
+  process.nextTick(() => {
+    info('next tick 3');
+  });
 });
 
-console.log('program end');
+info('program end');
